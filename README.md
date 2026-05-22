@@ -1,0 +1,1 @@
+# discord-fancy-chat-capture
