@@ -22,9 +22,21 @@ interface ControlsProps {
   onExport: () => void;
   exporting: boolean;
   count: number;
+  authors: string[];
+  anonymized: Set<string>;
+  onToggleAnon: (name: string) => void;
 }
 
-export function Controls({ theme, onChange, onExport, exporting, count }: ControlsProps) {
+export function Controls({
+  theme,
+  onChange,
+  onExport,
+  exporting,
+  count,
+  authors,
+  anonymized,
+  onToggleAnon,
+}: ControlsProps) {
   const set = (patch: Partial<Theme>) => onChange({ ...theme, ...patch });
 
   return (
@@ -105,6 +117,22 @@ export function Controls({ theme, onChange, onExport, exporting, count }: Contro
           배경 프레임
         </label>
       </section>
+
+      {authors.length > 0 && (
+        <section className="control-group toggles">
+          <span className="control-label">익명 처리</span>
+          {authors.map((name) => (
+            <label key={name}>
+              <input
+                type="checkbox"
+                checked={anonymized.has(name)}
+                onChange={() => onToggleAnon(name)}
+              />
+              <span className="anon-name">{name}</span>
+            </label>
+          ))}
+        </section>
+      )}
 
       <button className="export" onClick={onExport} disabled={exporting}>
         {exporting ? '내보내는 중…' : 'PNG로 저장'}

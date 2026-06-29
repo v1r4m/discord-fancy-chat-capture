@@ -120,6 +120,12 @@ input[type='range'] {
   accent-color: #5865f2;
 }
 
+.anon-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .export {
   margin-top: auto;
   padding: 12px;

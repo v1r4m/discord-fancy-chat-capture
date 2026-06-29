@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Discord Fancy Chat Capture",
+  "description": "Capture Discord chats as long, beautiful, shareable images.",
+  "version": "0.1.0",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.discordapp.com/*",
+    "https://*.discordapp.net/*",
+    "https://discord.com/*",
+    "https://*.discord.com/*",
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_title": "Capture Discord chat"
+  },
+  "commands": {
+    "wxt:reload-extension": {
+      "description": "Reload the extension during development",
+      "suggested_key": {
+        "default": "Alt+R"
+      }
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval' http://localhost:3000; object-src 'self';",
+    "sandbox": "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000; sandbox allow-scripts allow-forms allow-popups allow-modals; child-src 'self';"
+  }
+}

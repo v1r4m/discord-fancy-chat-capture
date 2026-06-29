@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import type { Capture } from '@/utils/types';
 import { STORAGE_KEY } from '@/utils/types';
+import { anonymizeCapture, distinctAuthors } from '@/utils/anonymize';
 import { Controls, type Theme } from './components/Controls';
 import { MessageView } from './components/MessageView';
 
@@ -28,7 +29,24 @@ export function App() {
   const [capture, setCapture] = useState<Capture | null>(null);
   const [theme, setTheme] = useState<Theme>({ ...DEFAULT_THEME, ...themeFromUrl() });
   const [exporting, setExporting] = useState(false);
+  const [anonymized, setAnonymized] = useState<Set<string>>(new Set());
   const frameRef = useRef<HTMLDivElement>(null);
+
+  const authors = useMemo(
+    () => (capture ? distinctAuthors(capture.messages) : []),
+    [capture],
+  );
+  const view = useMemo(
+    () => (capture ? anonymizeCapture(capture, anonymized) : null),
+    [capture, anonymized],
+  );
+
+  const toggleAnon = (name: string) =>
+    setAnonymized((prev) => {
+      const next = new Set(prev);
+      next.has(name) ? next.delete(name) : next.add(name);
+      return next;
+    });
 
   useEffect(() => {
     // `?demo=1` loads a built-in sample capture — useful for previewing the
@@ -65,7 +83,7 @@ export function App() {
     }
   }
 
-  if (!capture) {
+  if (!capture || !view) {
     return (
       <div className="app">
         <EmptyState />
@@ -81,6 +99,9 @@ export function App() {
         onExport={exportPng}
         exporting={exporting}
         count={capture.messages.length}
+        authors={authors}
+        anonymized={anonymized}
+        onToggleAnon={toggleAnon}
       />
       <div className="stage">
         <div
@@ -95,7 +116,7 @@ export function App() {
             className={`surface ${theme.mode}`}
             style={{ width: theme.width, borderRadius: theme.rounded ? 14 : 0 }}
           >
-            {capture.messages.map((message, idx) => (
+            {view.messages.map((message, idx) => (
               <MessageView key={`${message.id}-${idx}`} message={message} />
             ))}
           </div>
